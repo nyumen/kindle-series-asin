@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Kindle シリーズASINコピー",
+  "version": "1.0.0",
+  "description": "Kindleシリーズページの巻ASINを全件クリップボードにコピーする（改行区切り）",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.co.jp/dp/*",
+        "https://www.amazon.co.jp/*/dp/*",
+        "https://www.amazon.co.jp/gp/product/*",
+        "https://www.amazon.co.jp/kindle-dbs/product/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

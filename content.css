@@ -1,0 +1,22 @@
+#kac-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483647;
+  padding: 10px 16px;
+  border: 1px solid #8d6e2f;
+  border-radius: 8px;
+  background: #ffd814;
+  color: #0f1111;
+  font: 600 13px/1.4 "Amazon Ember", Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+  cursor: pointer;
+}
+
+#kac-button:hover { background: #f7ca00; }
+
+#kac-button[disabled] { cursor: default; opacity: .75; }
+
+#kac-button.kac-done { background: #d5f5d5; border-color: #4a8a4a; }
+
+#kac-button.kac-error { background: #f7d5d5; border-color: #a94442; }
