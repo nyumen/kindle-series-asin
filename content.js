@@ -186,7 +186,10 @@
           btn.className = "kac-error";
           btn.textContent = "巻が見つかりません";
         } else {
-          await copyText(asins.join("\n"));
+          // 出現順の通し番号を付ける（1 B00AQ9IH8W …）
+          await copyText(
+            asins.map((a, i) => `${i + 1} ${a}`).join("\n")
+          );
           btn.className = "kac-done";
           btn.textContent = `${asins.length}件コピーしました`;
         }
