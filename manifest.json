@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Kindle シリーズASINコピー",
-  "version": "1.0.0",
-  "description": "Kindleシリーズページの巻ASINを全件クリップボードにコピーする（改行区切り）",
+  "name": "シリーズの巻IDコピー",
+  "version": "1.1.0",
+  "description": "Kindleシリーズページの巻ASIN／BOOK OFFセットページの巻ISBNを、通し番号つきでクリップボードにコピーする",
   "content_scripts": [
     {
       "matches": [
@@ -11,7 +11,13 @@
         "https://www.amazon.co.jp/gp/product/*",
         "https://www.amazon.co.jp/kindle-dbs/product/*"
       ],
-      "js": ["content.js"],
+      "js": ["ui.js", "kindle.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://shopping.bookoff.co.jp/s/*"],
+      "js": ["ui.js", "bookoff.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }

@@ -144,73 +144,23 @@
     });
   }
 
-  async function copyText(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return;
-    } catch (_e) {
-      // 権限やフォーカスで弾かれた場合の保険
-    }
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.cssText = "position:fixed;left:-9999px;top:0;";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    ta.remove();
-    if (!ok) throw new Error("clipboard write failed");
-  }
-
-  function mount() {
-    if (!pageAsin() || document.getElementById("kac-button")) return;
-    // シリーズページ（巻一覧かまとめ買いカードがある）だけに出す
-    const html = document.documentElement.innerHTML;
-    const looksLikeSeries = html.includes("series-childAsin-item_") ||
-      html.includes("data-offer-asins=") ||
-      !!document.querySelector("#seriesAsinList, [id^='series-childAsin-item_']");
-    if (!looksLikeSeries) return;
-
-    const btn = document.createElement("button");
-    btn.id = "kac-button";
-    btn.type = "button";
-    btn.textContent = "ASINをコピー";
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      btn.className = "";
-      btn.textContent = "読み込み中…";
-      try {
-        const asins = await collect((n) => {
-          btn.textContent = `読み込み中… ${n}件`;
-        });
-        if (!asins.length) {
-          btn.className = "kac-error";
-          btn.textContent = "巻が見つかりません";
-        } else {
-          // 出現順の通し番号を付ける（1 B00AQ9IH8W …）
-          await copyText(
-            asins.map((a, i) => `${i + 1} ${a}`).join("\n")
-          );
-          btn.className = "kac-done";
-          btn.textContent = `${asins.length}件コピーしました`;
-        }
-      } catch (e) {
-        btn.className = "kac-error";
-        btn.textContent = "失敗（コンソール参照）";
-        console.error("[kindle-asin-copy]", e);
-      } finally {
-        btn.disabled = false;
-        setTimeout(() => {
-          btn.className = "";
-          btn.textContent = "ASINをコピー";
-        }, 4000);
-      }
-    });
-    document.body.appendChild(btn);
-  }
-
-  mount();
-  // 巻一覧は遅延描画なので、出てきてから判定できるよう少し粘る
-  const observer = new MutationObserver(() => mount());
-  observer.observe(document.documentElement, { childList: true, subtree: true });
-  setTimeout(() => observer.disconnect(), 15000);
+  KAC.mount({
+    tag: "kindle",
+    label: "ASINをコピー",
+    empty: "巻が見つかりません",
+    watchMs: 15000, // 巻一覧は遅延描画なので長めに粘る
+    detect: () => {
+      if (!pageAsin()) return false;
+      // シリーズページ（巻一覧かまとめ買いカードがある）だけに出す
+      const html = document.documentElement.innerHTML;
+      return html.includes("series-childAsin-item_") ||
+        html.includes("data-offer-asins=") ||
+        !!document.querySelector(
+          "#seriesAsinList, [id^='series-childAsin-item_']"
+        );
+    },
+    // 出現順の通し番号を付ける（1 B00AQ9IH8W …）
+    collect: async (onProgress) =>
+      (await collect(onProgress)).map((asin, i) => ({ no: i + 1, value: asin })),
+  });
 })();
